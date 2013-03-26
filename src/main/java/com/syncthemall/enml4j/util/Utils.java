@@ -1,4 +1,4 @@
-package org.enml4j.util;
+package com.syncthemall.enml4j.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

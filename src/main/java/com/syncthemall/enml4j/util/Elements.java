@@ -1,4 +1,4 @@
-package org.enml4j.util;
+package com.syncthemall.enml4j.util;
 
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;

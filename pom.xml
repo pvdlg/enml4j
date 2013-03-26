@@ -1,8 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.enml4j</groupId>
+	<groupId>com.syncthemall</groupId>
 	<artifactId>enml4j</artifactId>
 	<packaging>jar</packaging>
 	<version>0.1.0</version>
@@ -47,10 +46,6 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	<properties>
-		<gpg.keyname>0490D690</gpg.keyname>
-		<release.username>vanduynslagerp</release.username>
-	</properties>
 	<build>
 		<plugins>
 			<plugin>

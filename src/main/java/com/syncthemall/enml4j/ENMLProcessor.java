@@ -1,4 +1,4 @@
-package org.enml4j;
+package com.syncthemall.enml4j;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,19 +30,19 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.enml4j.converter.BaseConverter;
-import org.enml4j.converter.Converter;
-import org.enml4j.converter.MediaConverter;
-import org.enml4j.impl.DefaultCryptTagConverter;
-import org.enml4j.impl.DefaultInlineMediaTagConverter;
-import org.enml4j.impl.DefaultMediaTagConverter;
-import org.enml4j.impl.DefaultNoteTagConverter;
-import org.enml4j.impl.DefaultTodoTagConverter;
-import org.enml4j.util.Elements;
-import org.enml4j.util.Utils;
 
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Resource;
+import com.syncthemall.enml4j.converter.BaseConverter;
+import com.syncthemall.enml4j.converter.Converter;
+import com.syncthemall.enml4j.converter.MediaConverter;
+import com.syncthemall.enml4j.impl.DefaultCryptTagConverter;
+import com.syncthemall.enml4j.impl.DefaultInlineMediaTagConverter;
+import com.syncthemall.enml4j.impl.DefaultMediaTagConverter;
+import com.syncthemall.enml4j.impl.DefaultNoteTagConverter;
+import com.syncthemall.enml4j.impl.DefaultTodoTagConverter;
+import com.syncthemall.enml4j.util.Elements;
+import com.syncthemall.enml4j.util.Utils;
 
 /**
  * The entry point of ENML4j.
@@ -77,7 +77,7 @@ import com.evernote.edam.type.Resource;
  */
 public class ENMLProcessor {
 
-	private Logger log = Logger.getLogger("org.enml4j.ENMLProcessor");
+	private Logger log = Logger.getLogger("com.syncthemall.ENMLProcessor");
 
 	/**
 	 * The Attribute {@code <en-note>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding

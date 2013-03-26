@@ -1,4 +1,4 @@
-package org.enml4j.converter;
+package com.syncthemall.enml4j.converter;
 
 import java.net.URL;
 import java.util.List;
@@ -9,9 +9,9 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.enml4j.util.Elements;
 
 import com.evernote.edam.type.Note;
+import com.syncthemall.enml4j.util.Elements;
 
 /**
  * Base class to extends to creates custom converters for {@code <en-media>} ENML tags.

@@ -1,4 +1,4 @@
-package org.enml4j.impl;
+package com.syncthemall.enml4j.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,13 +11,13 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.enml4j.converter.BaseConverter;
-import org.enml4j.converter.Converter;
-import org.enml4j.util.Elements;
-import org.enml4j.util.Utils;
 
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Resource;
+import com.syncthemall.enml4j.converter.BaseConverter;
+import com.syncthemall.enml4j.converter.Converter;
+import com.syncthemall.enml4j.util.Elements;
+import com.syncthemall.enml4j.util.Utils;
 
 /**
  * Default {@code Converter} implementation to convert {@code <en-media>} ENML tags in inline HTML using URI scheme.
@@ -118,9 +118,9 @@ public class DefaultInlineMediaTagConverter extends BaseConverter {
 	}
 
 	/**
-	 * If the mime type of the {@code <en-media>} tag currently processed, add and additional {@code <img></img>} tag to display
-	 * an icon in the {@code <a></a>} tag created by
-	 * {@link DefaultMediaTagConverter#convertElement(StartElement, Note)}.
+	 * If the {@code <en-media>} tag currently processed contains a non image file, add and additional
+	 * {@code <img></img>} tag to display an icon in the {@code <a></a>} tag created by
+	 * {@link DefaultInlineMediaTagConverter#convertElement(StartElement, Note)}.
 	 */
 	public final List<XMLEvent> insertIn(final StartElement start, final Note note) {
 

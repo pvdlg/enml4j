@@ -32,7 +32,7 @@ The easiest way to incorporate the SDK into your Java project is to use Maven. I
 
 ```xml
     	<dependency>
-			<groupId>org.enml4j</groupId>
+			<groupId>com.syncthemall</groupId>
 			<artifactId>enml4j</artifactId>
 			<version>0.1.0</version>
 		</dependency>

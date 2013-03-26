@@ -1,4 +1,4 @@
-package org.enml4j.impl;
+package com.syncthemall.enml4j.impl;
 
 import java.util.List;
 
@@ -6,11 +6,11 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.enml4j.converter.BaseConverter;
-import org.enml4j.converter.Converter;
-import org.enml4j.util.Elements;
 
 import com.evernote.edam.type.Note;
+import com.syncthemall.enml4j.converter.BaseConverter;
+import com.syncthemall.enml4j.converter.Converter;
+import com.syncthemall.enml4j.util.Elements;
 
 /**
  * Default {@code Converter} implementation to convert {@code <en-crypt>} ENML tags.
