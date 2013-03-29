@@ -2,12 +2,7 @@ package com.syncthemall.enml4j;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -29,7 +24,6 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
 
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Resource;
@@ -101,7 +95,7 @@ public class ENMLProcessor {
 	public static final String CRYPT = "en-crypt";
 
 	/** Version of ENML4j. Written in the header of the generated HTML. */
-	public static final String VERSION = "ENML4J 0.1.0";
+	public static final String VERSION = "ENML4J 0.1.1";
 
 	private static final Map<String, Converter> CONVERTERS = new HashMap<String, Converter>();
 	private static final Map<String, Converter> INLINE_CONVERTERS = new HashMap<String, Converter>();
@@ -262,36 +256,12 @@ public class ENMLProcessor {
 	 * 
 	 * @param note the Note to creates the HTML from. It has to contain its list of {@code Resource}s with data and an
 	 *            ENML content
-	 * @return an {@code InputStream} containing the resulting HTML file
-	 * @throws XMLStreamException if there is an unexpected processing error, like a malformed ENML content in the Note
-	 * @throws IOException if an I/O error occurs during the {@code InputStream} creation
-	 */
-	public final InputStream noteToInlineHTMLInputStream(final Note note) throws XMLStreamException, IOException {
-		PipedInputStream pis = new PipedInputStream();
-		PipedOutputStream pos = new PipedOutputStream(pis);
-		noteToInlineHTML(note, pos);
-		return pis;
-	}
-
-	/**
-	 * Creates an HTML version of the ENML content of a {@code Note}.
-	 * <p>
-	 * The HTML is generated based on the {@link Converter}s defined by
-	 * {@code ENMLProcessor#setConverters(Converter, Converter, Converter, Converter)}. <br>
-	 * The methods assumes the {@code Note} contains a valid ENML content and that it's {@code Resource}s objects
-	 * contains their date. <br>
-	 * The {@code Resource}s of the {@code Note} will be generated directly in the generated HTML using Data URI scheme.
-	 * See <a href="http://en.wikipedia.org/wiki/Data_URI_scheme">Data_URI_scheme</a> <br>
-	 * The generated HTML page will be viewable in a browser without requiring an access to the physical file associated
-	 * to the {@code Resource}
-	 * 
-	 * @param note the Note to creates the HTML from. It has to contain its list of {@code Resource}s with data and an
-	 *            ENML content
 	 * @param out an {@code OutputStream} in which to write the resulting HTML file
+	 * @return the {@code OutputStream} in parameter containing the resulting HTML file
 	 * @throws XMLStreamException if there is an unexpected processing error, like a malformed ENML content in the Note
 	 */
-	public final void noteToInlineHTML(final Note note, final OutputStream out) throws XMLStreamException {
-		noteToHTML(note, null, out, true);
+	public final OutputStream noteToInlineHTML(final Note note, final OutputStream out) throws XMLStreamException {
+		return noteToHTML(note, null, out, true);
 	}
 
 	/**
@@ -315,14 +285,14 @@ public class ENMLProcessor {
 	 * 
 	 * @param note the Note to creates the HTML from. It has to contain its list of {@code Resource}s with data and an
 	 *            ENML content
-	 * @param mapGUIDURL the mapping of {@code Resource}s GUID with their corresponding physical files {@code URL}
+	 * @param mapGUIDURL the mapping of {@code Resource}s GUID with their corresponding physical files path
 	 * @return a {@code String} containing the resulting HTML file
 	 * @throws XMLStreamException if there is an unexpected processing error, like a malformed ENML content in the Note
 	 */
-	public final String noteToHTMLString(final Note note, final Map<String, URL> mapGUIDURL) throws XMLStreamException {
+	public final String noteToHTMLString(final Note note, final Map<String, String> mapGUIDURL) throws XMLStreamException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		Map<String, URL> hashURLMap = new HashMap<String, URL>();
+		Map<String, String> hashURLMap = new HashMap<String, String>();
 		if (mapGUIDURL != null) {
 			for (String guid : mapGUIDURL.keySet()) {
 				for (Resource resource : note.getResources()) {
@@ -357,60 +327,15 @@ public class ENMLProcessor {
 	 * 
 	 * @param note the Note to creates the HTML from. It has to contain its list of {@code Resource}s with data and an
 	 *            ENML content
-	 * @param mapGUIDURL the mapping of {@code Resource}s GUID with their corresponding physical files {@code URL}
-	 * @return an {@code InputStream} containing the resulting HTML file
-	 * @throws XMLStreamException if there is an unexpected processing error, like a malformed ENML content in the Note
-	 * @throws IOException if an I/O error occurs during the {@code InputStream} creation
-	 */
-	public final InputStream noteToHTMLInputStream(final Note note, final Map<String, URL> mapGUIDURL)
-			throws XMLStreamException, IOException {
-
-		Map<String, URL> hashURLMap = new HashMap<String, URL>();
-
-		if (mapGUIDURL != null) {
-			for (String guid : mapGUIDURL.keySet()) {
-				for (Resource resource : note.getResources()) {
-					if (resource.getGuid().equals(guid)) {
-						hashURLMap.put(Utils.bytesToHex(resource.getData().getBodyHash()), mapGUIDURL.get(guid));
-					}
-				}
-			}
-		}
-		PipedInputStream pis = new PipedInputStream();
-		PipedOutputStream pos = new PipedOutputStream(pis);
-		noteToHTML(note, hashURLMap, pos, false);
-		return pis;
-	}
-
-	/**
-	 * Creates an HTML version of the ENML content of a {@code Note}.
-	 * <p>
-	 * The HTML is generated based on the {@link Converter}s defined by
-	 * {@code ENMLProcessor#setConverters(Converter, Converter, Converter, Converter)}. <br>
-	 * The methods assumes the {@code Note} contains a valid ENML content and that it's {@code Resource}s objects
-	 * contains their date. <br>
-	 * The {@code Resource}s of the {@code Note} will be referenced in the generated HTML according to the {@code Map}
-	 * in parameter. This {@code Map} has to contain for every {@code Resource} in the {@code Note} an entry with :
-	 * <ul>
-	 * <li>the GUID of the {@code Resource}</li>
-	 * <li>The {@code URL} of the actual resource to reference in the generated HTML. This {@code URL} will typically be
-	 * used as the value of the 'href' attribute for file resources and 'src' attribute for image resources.</li>
-	 * </ul>
-	 * <br>
-	 * In order to view the HTML page generated in a browser all the resources (files, images, ...) has to be accessible
-	 * by the browser at the {@code URL} given in the {@code Map}. The resources (the actual files and images) doesn't
-	 * need to be accessible by this methods though.
-	 * 
-	 * @param note the Note to creates the HTML from. It has to contain its list of {@code Resource}s with data and an
-	 *            ENML content
-	 * @param mapGUIDURL the mapping of {@code Resource}s GUID with their corresponding physical files {@code URL}
+	 * @param mapGUIDURL the mapping of {@code Resource}s GUID with their corresponding physical files path
 	 * @param out an {@code OutputStream} in which to write the resulting HTML file
+	 * @return the {@code OutputStream} in parameter containing the resulting HTML file
 	 * @throws XMLStreamException if there is an unexpected processing error, like a malformed ENML content in the Note
 	 */
-	public final void noteToHTML(final Note note, final Map<String, URL> mapGUIDURL, final OutputStream out)
+	public final OutputStream noteToHTML(final Note note, final Map<String, String> mapGUIDURL, final OutputStream out)
 			throws XMLStreamException {
 
-		Map<String, URL> hashURLMap = new HashMap<String, URL>();
+		Map<String, String> hashURLMap = new HashMap<String, String>();
 
 		if (mapGUIDURL != null) {
 			for (String guid : mapGUIDURL.keySet()) {
@@ -421,10 +346,10 @@ public class ENMLProcessor {
 				}
 			}
 		}
-		noteToHTML(note, hashURLMap, out, false);
+		return noteToHTML(note, hashURLMap, out, false);
 	}
 
-	private void noteToHTML(final Note note, final Map<String, URL> mapHashURL, final OutputStream out,
+	private OutputStream noteToHTML(final Note note, final Map<String, String> mapHashURL, final OutputStream out,
 			final boolean inline) throws XMLStreamException {
 
 		long start = System.currentTimeMillis();
@@ -527,7 +452,7 @@ public class ENMLProcessor {
 
 		log.fine("Note " + note.getGuid() + " has been converted in "
 				+ Utils.getDurationBreakdown(System.currentTimeMillis() - start));
-		return;
+		return out;
 	}
 
 	/**
@@ -614,9 +539,10 @@ public class ENMLProcessor {
 	 * 
 	 * @param note the Note to update. It has to contain an ENML content.
 	 * @param oldNewResourcesMap the mapping of old and new {@code Resource}s
+	 * @return the {@code Note} in parameter with updated content
 	 * @throws XMLStreamException if there is an unexpected processing error, like a malformed ENML content in the Note
 	 */
-	public final void updateNoteResources(final Note note, final Map<Resource, Resource> oldNewResourcesMap)
+	public final Note updateNoteResources(final Note note, final Map<Resource, Resource> oldNewResourcesMap)
 			throws XMLStreamException {
 
 		Map<String, Resource> hashResourceMap = new HashMap<String, Resource>();
@@ -625,7 +551,7 @@ public class ENMLProcessor {
 			hashResourceMap.put(Utils.bytesToHex(oldResource.getData().getBodyHash()),
 					oldNewResourcesMap.get(oldResource));
 		}
-		updateNoteResourcesByHash(note, hashResourceMap);
+		return updateNoteResourcesByHash(note, hashResourceMap);
 	}
 
 	/**
@@ -651,9 +577,10 @@ public class ENMLProcessor {
 	 * 
 	 * @param note the Note to update. It has to contain an ENML content.
 	 * @param oldNewResourcesMap the mapping of old and new {@code Resource}s
+	 * @return the {@code Note} in parameter with updated content
 	 * @throws XMLStreamException if there is an unexpected processing error, like a malformed ENML content in the Note
 	 */
-	public final void updateNoteResourcesByGUID(final Note note, final Map<String, String> oldNewResourcesMap)
+	public final Note updateNoteResourcesByGUID(final Note note, final Map<String, String> oldNewResourcesMap)
 			throws XMLStreamException {
 
 		Map<String, Resource> hashResourceMap = new HashMap<String, Resource>();
@@ -672,10 +599,10 @@ public class ENMLProcessor {
 				hashResourceMap.put(Utils.bytesToHex(oldResource.getData().getBodyHash()), newResource);
 			}
 		}
-		updateNoteResourcesByHash(note, hashResourceMap);
+		return updateNoteResourcesByHash(note, hashResourceMap);
 	}
 
-	private void updateNoteResourcesByHash(final Note note, final Map<String, Resource> oldNewResourcesMap)
+	private Note updateNoteResourcesByHash(final Note note, final Map<String, Resource> oldNewResourcesMap)
 			throws XMLStreamException {
 
 		long start = System.currentTimeMillis();
@@ -733,6 +660,7 @@ public class ENMLProcessor {
 		note.setContent(new String(baos.toByteArray(), Charset.forName("UTF-8")));
 		log.fine("Note ENML content of " + note.getGuid() + " has been updated with resource mapping in "
 				+ Utils.getDurationBreakdown(System.currentTimeMillis() - start));
+		return note;
 	}
 
 	/**

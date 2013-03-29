@@ -1,6 +1,5 @@
 package com.syncthemall.enml4j.converter;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +7,6 @@ import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
 
 import com.evernote.edam.type.Note;
 import com.syncthemall.enml4j.util.Elements;
@@ -21,25 +19,26 @@ public abstract class BaseConverter implements Converter {
 
 	private XMLEventFactory eventFactory;
 
-	public final Elements convertElement(final StartElement start, final Note note, final Map<String, URL> mapHashURL) {
+	public final Elements convertElement(final StartElement start, final Note note, final Map<String, String> mapHashURL) {
 		return convertElement(start, note);
 	}
 
 	public final List<XMLEvent> insertBefore(final StartElement start, final Note note,
-			final Map<String, URL> mapHashURL) {
+			final Map<String, String> mapHashURL) {
 		return insertBefore(start, note);
 	}
 
-	public final List<XMLEvent> insertAfter(final StartElement start, final Note note, final Map<String, URL> mapHashURL) {
+	public final List<XMLEvent> insertAfter(final StartElement start, final Note note,
+			final Map<String, String> mapHashURL) {
 		return insertAfter(start, note);
 	}
 
-	public final List<XMLEvent> insertIn(final StartElement start, final Note note, final Map<String, URL> mapHashURL) {
+	public final List<XMLEvent> insertIn(final StartElement start, final Note note, final Map<String, String> mapHashURL) {
 		return insertIn(start, note);
 	}
 
 	public final Characters convertCharacter(final Characters characters, final StartElement start, final Note note,
-			final Map<String, URL> mapHashURL) {
+			final Map<String, String> mapHashURL) {
 		return convertCharacter(characters, start, note);
 	}
 

@@ -1,6 +1,5 @@
 package com.syncthemall.enml4j.converter;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +8,6 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
 
 import com.evernote.edam.type.Note;
 import com.syncthemall.enml4j.util.Elements;
@@ -48,18 +46,18 @@ public interface Converter {
 	 * </ul>
 	 * Returning a {@code StartElement} with a non corresponding {@code EndElement} will result in malformed HTML.
 	 * <p>
-	 * For example a {@code Converter} designed to convert an {@code <en-media>} tag to an HTML {@code <img>} tag or an HTML 'a' (link)
-	 * tag depending on the attribute of the {@code <en-media>} tag would implement this method. The implemented methods would
-	 * have to determines first if the converted tag has to be {@code <img>} or 'a'. Then return an {@code Elements} with either
-	 * an {@code <img>} {@code StartElement} and an {@code <img>} {@code EndElement} or 'a' {@code StartElement} and an 'a
-	 * {@code EndElement}.
+	 * For example a {@code Converter} designed to convert an {@code <en-media>} tag to an HTML {@code <img>} tag or an
+	 * HTML 'a' (link) tag depending on the attribute of the {@code <en-media>} tag would implement this method. The
+	 * implemented methods would have to determines first if the converted tag has to be {@code <img>} or 'a'. Then
+	 * return an {@code Elements} with either an {@code <img>} {@code StartElement} and an {@code <img>}
+	 * {@code EndElement} or 'a' {@code StartElement} and an 'a {@code EndElement}.
 	 * 
 	 * @param start the {@code StartElement} of the corresponding ENML tag
 	 * @param note the {@code Note} currently converted
-	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files {@code URL}
+	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files path
 	 * @return an {@code Elements<StartElement, EndElement>} the converted start and end tags
 	 */
-	Elements convertElement(StartElement start, Note note, Map<String, URL> mapHashURL);
+	Elements convertElement(StartElement start, Note note, Map<String, String> mapHashURL);
 
 	/**
 	 * Add a {@code List<XMLEvent>} before a converted tag.
@@ -81,10 +79,10 @@ public interface Converter {
 	 * 
 	 * @param start the {@code StartElement} of the corresponding ENML tag
 	 * @param note the {@code Note} currently converted
-	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files {@code URL}
+	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files path
 	 * @return a {@code List<XMLEvent>} to insert before a currently converted ENML tag
 	 */
-	List<XMLEvent> insertBefore(StartElement start, Note note, Map<String, URL> mapHashURL);
+	List<XMLEvent> insertBefore(StartElement start, Note note, Map<String, String> mapHashURL);
 
 	/**
 	 * Add a {@code List<XMLEvent>} after a converted tag.
@@ -105,10 +103,10 @@ public interface Converter {
 	 * 
 	 * @param start the {@code StartElement} of the corresponding ENML tag
 	 * @param note the {@code Note} currently converted
-	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files {@code URL}
+	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files path
 	 * @return a {@code List<XMLEvent>} to insert before a currently converted ENML tag
 	 */
-	List<XMLEvent> insertAfter(StartElement start, Note note, Map<String, URL> mapHashURL);
+	List<XMLEvent> insertAfter(StartElement start, Note note, Map<String, String> mapHashURL);
 
 	/**
 	 * Add a {@code List<XMLEvent>} in a converted tag.
@@ -127,19 +125,20 @@ public interface Converter {
 	 * and for every {@code StartElement} an {@code EndElement} has to exist.<br>
 	 * A non valid {@code List<XMLEvent>} will result in malformed HTML.
 	 * <p>
-	 * For example a {@code Converter} designed to convert an {@code <en-media>} tag to an HTML an HTML 'a' (link) tag with an
-	 * {@code <img>} tag in it, creates an http link with an image would implements this method. The convertion of the
-	 * {@code <en-media>} tag to an 'a' tag will be handled by {@link Converter#convertElement(StartElement, Note, Map)}. The
-	 * creation of the included {@code <img>} tag will be handled by this method. The implemented methods would have to creates
-	 * an {@code <img>} {@code StartElement}, fill it with {@link Attribute}, eventually creates an {@code Characters} to add
-	 * some text and finally an {@code <img>} {@code EndElement}.
+	 * For example a {@code Converter} designed to convert an {@code <en-media>} tag to an HTML an HTML 'a' (link) tag
+	 * with an {@code <img>} tag in it, creates an http link with an image would implements this method. The convertion
+	 * of the {@code <en-media>} tag to an 'a' tag will be handled by
+	 * {@link Converter#convertElement(StartElement, Note, Map)}. The creation of the included {@code <img>} tag will be
+	 * handled by this method. The implemented methods would have to creates an {@code <img>} {@code StartElement}, fill
+	 * it with {@link Attribute}, eventually creates an {@code Characters} to add some text and finally an {@code <img>}
+	 * {@code EndElement}.
 	 * 
 	 * @param start the {@code StartElement} of the corresponding ENML tag
 	 * @param note the {@code Note} currently converted
-	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files {@code URL}
+	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files path
 	 * @return a {@code List<XMLEvent>} to insert before a currently converted ENML tag
 	 */
-	List<XMLEvent> insertIn(StartElement start, Note note, Map<String, URL> mapHashURL);
+	List<XMLEvent> insertIn(StartElement start, Note note, Map<String, String> mapHashURL);
 
 	/**
 	 * Transform text in a in a converted tag.
@@ -161,10 +160,10 @@ public interface Converter {
 	 * @param characters {@code Characters} containing the text included in the currently processed ENML tag
 	 * @param start the {@code StartElement} of the corresponding ENML tag
 	 * @param note the {@code Note} currently converted
-	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files {@code URL}
+	 * @param mapHashURL the mapping of {@code Resource}s hash with their corresponding physical files path
 	 * @return a new {@code Characters} containing the replacement text
 	 */
-	Characters convertCharacter(Characters characters, StartElement start, Note note, Map<String, URL> mapHashURL);
+	Characters convertCharacter(Characters characters, StartElement start, Note note, Map<String, String> mapHashURL);
 
 	/**
 	 * @return the {@code XMLEventFactory} used to creates new {@code XMLEvent}.

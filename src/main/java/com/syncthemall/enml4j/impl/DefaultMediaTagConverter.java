@@ -1,6 +1,5 @@
 package com.syncthemall.enml4j.impl;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,7 +11,6 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-
 
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Resource;
@@ -58,7 +56,7 @@ public class DefaultMediaTagConverter extends MediaConverter {
 	/**
 	 * Replace an {@code <en-media>} tag by an {@code <img></img>} or {@code <a></a>} tag.
 	 */
-	public final Elements convertElement(final StartElement start, final Note note, final Map<String, URL> mapHashURL) {
+	public final Elements convertElement(final StartElement start, final Note note, final Map<String, String> mapHashURL) {
 
 		Attribute type = start.getAttributeByName(new QName("type"));
 		Attribute hash = start.getAttributeByName(new QName("hash"));
@@ -83,7 +81,7 @@ public class DefaultMediaTagConverter extends MediaConverter {
 				Attribute attr = iterator.next();
 				if (attr.getName().getLocalPart().equals("hash")) {
 					Attribute src = getEventFactory().createAttribute("src",
-							mapHashURL.get(hash.getValue()) != null ? mapHashURL.get(hash.getValue()).toString() : "");
+							mapHashURL.get(hash.getValue()) != null ? mapHashURL.get(hash.getValue()) : "");
 					newAttrs.add(src);
 				} else if (!attr.getName().getLocalPart().equals("type")) {
 					// type is not a supported attribute for img tag.
@@ -102,10 +100,8 @@ public class DefaultMediaTagConverter extends MediaConverter {
 					"",
 					"a",
 					Arrays.asList(
-							getEventFactory().createAttribute(
-									"href",
-									mapHashURL.get(hash.getValue()) != null ? mapHashURL.get(hash.getValue())
-											.toString() : ""),
+							getEventFactory().createAttribute("href",
+									mapHashURL.get(hash.getValue()) != null ? mapHashURL.get(hash.getValue()) : ""),
 							type,
 							getEventFactory().createAttribute("style",
 									"text-decoration: none;color: #6f6f6f;position: relative; display: block;"))
@@ -118,7 +114,7 @@ public class DefaultMediaTagConverter extends MediaConverter {
 	 * {@code <img></img>} tag to display an icon in the {@code <a></a>} tag created by
 	 * {@link DefaultMediaTagConverter#convertElement(StartElement, Note, Map)}.
 	 */
-	public final List<XMLEvent> insertIn(final StartElement start, final Note note, final Map<String, URL> mapHashURL) {
+	public final List<XMLEvent> insertIn(final StartElement start, final Note note, final Map<String, String> mapHashURL) {
 
 		List<XMLEvent> result = new ArrayList<XMLEvent>();
 
@@ -172,14 +168,14 @@ public class DefaultMediaTagConverter extends MediaConverter {
 	 * This {@code Converter} does not add any tag before the {@code <img></img>} or {@code <a></a>} tag created.
 	 */
 	public final List<XMLEvent> insertBefore(final StartElement start, final Note note,
-			final Map<String, URL> mapHashURL) {
+			final Map<String, String> mapHashURL) {
 		return null;
 	}
 
 	/**
 	 * This {@code Converter} does not add any tag after the {@code <img></img>} or {@code <a></a>} tag created.
 	 */
-	public final List<XMLEvent> insertAfter(final StartElement start, final Note note, final Map<String, URL> mapHashURL) {
+	public final List<XMLEvent> insertAfter(final StartElement start, final Note note, final Map<String, String> mapHashURL) {
 		return null;
 	}
 
@@ -187,7 +183,7 @@ public class DefaultMediaTagConverter extends MediaConverter {
 	 * This {@code Converter} does not replace any text in the {@code <img></img>} or {@code <a></a>} tag created.
 	 */
 	public final Characters convertCharacter(final Characters characters, final StartElement start, final Note note,
-			final Map<String, URL> mapHashURL) {
+			final Map<String, String> mapHashURL) {
 		return characters;
 	}
 
