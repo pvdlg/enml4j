@@ -11,7 +11,6 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-
 import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Resource;
 import com.syncthemall.enml4j.converter.BaseConverter;

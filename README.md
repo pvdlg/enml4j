@@ -34,7 +34,7 @@ The easiest way to incorporate the SDK into your Java project is to use Maven. I
     	<dependency>
 			<groupId>com.syncthemall</groupId>
 			<artifactId>enml4j</artifactId>
-			<version>0.1.1</version>
+			<version>0.2.0</version>
 		</dependency>
 ```
 
@@ -88,6 +88,16 @@ Potential future features:
   * Convert ENML to Plain text
   * Convert valid XHTML to ENML
   * Convert "street HTML" to ENML (very unlikely considering the lack of Java HTML renderer)
+
+Change log
+----------
+### 0.2.0
+  * New methods to delete `Resource`s from `Note` ENML content
+  * Methods to update `Resource` in `No` ENML can now also delete
+  * Minor code improvements
+### 0.1.1
+  * Mapping of external resources path now uses `String` instead of `URL`
+  * Methods returning `void` now return the variable in parameter
 
 License
 -------
