@@ -95,6 +95,7 @@ Change log
   * New methods to delete `Resource`s from `Note` ENML content
   * Methods to update `Resource` in `No` ENML can now also delete
   * Minor code improvements
+  
 ### 0.1.1
   * Mapping of external resources path now uses `String` instead of `URL`
   * Methods returning `void` now return the variable in parameter
