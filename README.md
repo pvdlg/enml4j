@@ -31,11 +31,11 @@ The best way to start is to look at [enml4j-sample](https://github.com/vanduynsl
 The easiest way to incorporate the SDK into your Java project is to use Maven. If you're using Maven already, simply add a new dependency to your `pom.xml`:
 
 ```xml
-    	<dependency>
-			<groupId>com.syncthemall</groupId>
-			<artifactId>enml4j</artifactId>
-			<version>0.2.0</version>
-		</dependency>
+<dependency>
+	<groupId>com.syncthemall</groupId>
+	<artifactId>enml4j</artifactId>
+	<version>0.2.0</version>
+</dependency>
 ```
 
 If you'd prefer to build the jar yourself, it's as simple as running

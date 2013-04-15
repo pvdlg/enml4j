@@ -69,10 +69,8 @@ public final class Utils {
 		}
 		buffer.flush();
 
-		byte[] encoded = Base64.encodeBase64(buffer.toByteArray());
-		String encodedString = new String(encoded);
-
-		return encodedString;
+		return Base64.encodeBase64String(buffer.toByteArray());
+		
 	}
 
 	/**
