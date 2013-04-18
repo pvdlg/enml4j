@@ -34,7 +34,7 @@ The easiest way to incorporate the SDK into your Java project is to use Maven. I
 <dependency>
 	<groupId>com.syncthemall</groupId>
 	<artifactId>enml4j</artifactId>
-	<version>0.2.0</version>
+	<version>0.2.1</version>
 </dependency>
 ```
 
@@ -91,6 +91,10 @@ Potential future features:
 
 Change log
 ----------
+### 0.2.1
+  * New methods to update `Resource`s in `Note` ENML content, based on their hash value
+  * Minor code improvements
+
 ### 0.2.0
   * New methods to delete `Resource`s from `Note` ENML content
   * Methods to update `Resource` in `No` ENML can now also delete

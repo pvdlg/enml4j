@@ -91,7 +91,7 @@ public class DefaultInlineMediaTagConverter extends BaseConverter {
 		}
 
 		if (currentResource == null) {
-			throw new RuntimeException("Tne note " + note
+			throw new RuntimeException("Tne note " + note.getTitle()
 					+ " has a resource referenced in the note content but inexistant as a Resource object");
 		}
 
@@ -161,7 +161,7 @@ public class DefaultInlineMediaTagConverter extends BaseConverter {
 			}
 
 			if (currentResource == null) {
-				throw new RuntimeException("Tne note " + note
+				throw new RuntimeException("Tne note " + note.getTitle()
 						+ " has a resource referenced in the note content but inexistant as a Resource object");
 			}
 

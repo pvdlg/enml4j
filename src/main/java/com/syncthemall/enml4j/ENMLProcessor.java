@@ -94,34 +94,38 @@ import com.syncthemall.enml4j.util.Utils;
  */
 public class ENMLProcessor {
 
-	private static Logger log = Logger.getLogger("com.syncthemall.ENMLProcessor");
+	private static Logger log = Logger.getLogger(ENMLProcessor.class.getName());
 
 	/**
 	 * The tag {@code <en-note>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
 	 * Evernote Markup Language</a>
 	 */
 	public static final String NOTE = "en-note";
+
 	/**
 	 * The tag {@code <en-media>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
 	 * Evernote Markup Language</a>
 	 */
 	public static final String MEDIA = "en-media";
+
 	/**
 	 * The tag {@code <en-todo>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
 	 * Evernote Markup Language</a>
 	 */
 	public static final String TODO = "en-todo";
+
 	/**
 	 * The tag {@code <en-crypt>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
 	 * Evernote Markup Language</a>
 	 */
 	public static final String CRYPT = "en-crypt";
+
 	/**
 	 * The Attribute {@code hash}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
 	 * Evernote Markup Language</a>
 	 */
 	public static final String HASH = "hash";
-	
+
 	/** The Attribute {@code type}. */
 	public static final String TYPE = "type";
 
@@ -129,14 +133,27 @@ public class ENMLProcessor {
 	public static final String CHARSET = "UTF-8";
 
 	/** Version of ENML4j. Written in the header of the generated HTML. */
-	public static final String VERSION = "ENML4J 0.2.0";
+	public static final String VERSION = "ENML4J 0.2.1";
+
+	/** Buffer size to convert image stream in base64. Defined to 16 KB. */
+	public static final int BUFFER_SIZE = 16384;
+
+	/** XHTML Transitional doctype. */
+	private static final String XHTML_DOCTYPE = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+
+	/** XHTML namespace. */
+	private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 
 	private Map<String, Converter> converters = new HashMap<String, Converter>();
 	private Map<String, Converter> inlineConverters = new HashMap<String, Converter>();
 
 	/** An instance of {@code XMLEventFactory} used to creates new {@link XMLEvent}s. */
 	private XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+
+	/** An instance of {@code XMLInputFactory} used to read XML content. */
 	private XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+
+	/** An instance of {@code XMLOutputFactory} used to write XML content. */
 	private XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
 	/**
@@ -501,6 +518,102 @@ public class ENMLProcessor {
 	}
 
 	/**
+	 * Updates the {@code Note} content with the information of new {@code Resource}s.
+	 * <p>
+	 * The update consist in replacing the 'hash' attributes of tags {@code <en-media>} in the ENML content of the
+	 * {@code Note}. The attributes are updated based on the mapping represented by {@code Map<String, String>} in
+	 * parameter. <br>
+	 * The methods assumes the {@code Note} has an ENML content and it's {@code Resource}s has data (to be able to
+	 * compute the hash). <br>
+	 * For every {@code Resource} that has to be updated this {@code Map} has to contain an entry with:
+	 * <ul>
+	 * <li>the hash of the {@code Resource} to update (the old Resource) as it is in the {@code Note} ENML content</li>
+	 * <li>the {@code Resource} to update with (the new Resource)</li>
+	 * </ul>
+	 * If a {@code Resource} is present in the {@code Note} but not in the {@code Map}:
+	 * <ul>
+	 * <li>it will stays untouched both in the ENML content and in the {@code Resource} list of the {@code Note}, if the
+	 * parameter deleteMissing is {@code false}.</li>
+	 * <li>the {@code <en-media>} tag corresponding to the missing GUID will be removed from the {@code Note} content.
+	 * In addition the corresponding {@code Resource} in the the {@code List<Resource>} of the {@code Note} will be
+	 * removed.</li>
+	 * </ul>
+	 * The method will take care of removing the old {@code Resource} objects in the {@code Note} list after they have
+	 * been updated.
+	 * 
+	 * @param note the Note to update. It has to contain an ENML content.
+	 * @param oldNewResourcesMap the mapping of old and new {@code Resource}s
+	 * @param deleteMissing if true, the {@code Resource}s of the {@code Note} not presents in the
+	 *            {@code Map<String, String>} will be deleted from it's {@code List<Resource>} and ENMLcontent
+	 * @return the {@code Note} in parameter with updated content
+	 * @throws XMLStreamException if there is an unexpected processing error, like a malformed ENML content in the Note
+	 */
+	public final Note updateNoteResourcesByHash(final Note note, final Map<String, Resource> oldNewResourcesMap,
+			final boolean deleteMissing) throws XMLStreamException {
+
+		long start = System.currentTimeMillis();
+		log.finer("Update ENML content with Resource mapping of Note " + note.getGuid());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		XMLEventReader reader = inputFactory.createXMLEventReader(new ByteArrayInputStream(note.getContent().getBytes(
+				Charset.forName(CHARSET))));
+
+		XMLEventWriter writer = outputFactory.createXMLEventWriter(baos);
+
+		List<String> hashToDelete = new ArrayList<String>();
+
+		while (reader.hasNext()) {
+			XMLEvent event = (XMLEvent) reader.next();
+			if (event.getEventType() == XMLEvent.START_DOCUMENT) {
+				StartElement startElement = event.asStartElement();
+				if (startElement.getName().getLocalPart().equals(MEDIA)) {
+					for (@SuppressWarnings("unchecked")
+					Iterator<Attribute> iterator = startElement.getAttributes(); iterator.hasNext();) {
+						Attribute attr = (Attribute) iterator.next();
+						if (attr.getName().getLocalPart().equals(HASH)) {
+							// If the resource has to be updated (is in the map)
+							if (oldNewResourcesMap.containsKey(attr.getValue())) {
+								Resource toUpdate = oldNewResourcesMap.get(attr.getValue());
+								writer.add(eventFactory.createAttribute(HASH,
+										Utils.bytesToHex(toUpdate.getData().getBodyHash())));
+								// if the ressource to update is not in the Note, add it
+								// This way the result Note will be consistent no matter if the Resource to update has
+								// already been added to the Note
+								if (!note.getResources().contains(toUpdate)) {
+									hashToDelete.add(attr.getValue());
+									note.addToResources(toUpdate);
+								}
+							} else {
+								if (deleteMissing) {
+									hashToDelete.add(attr.getValue());
+								} else {
+									writer.add(attr);
+								}
+							}
+						} else {
+							writer.add(attr);
+						}
+					}
+				} else {
+					writer.add(event);
+				}
+			} else {
+				writer.add(event);
+			}
+		}
+		// Remove the original resources after they have been updated
+		for (Resource resource : note.getResources()) {
+			if (hashToDelete.contains(Utils.bytesToHex(resource.getData().getBodyHash()))) {
+				note.getResources().remove(resource);
+			}
+		}
+		note.setContent(new String(baos.toByteArray(), Charset.forName(CHARSET)));
+		log.fine("Note ENML content of " + note.getGuid() + " has been updated with resource mapping in "
+				+ Utils.getDurationBreakdown(System.currentTimeMillis() - start));
+		return note;
+	}
+
+	/**
 	 * Updates the {@code Note} content by removing the information of a {@code List<Resource>}.
 	 * <p>
 	 * The update consist in removing the tags {@code <en-media>} in the ENML content of the {@code Note}. The tags are
@@ -604,8 +717,7 @@ public class ENMLProcessor {
 									Utils.bytesToHex(resourceIterator.next().getData().getBodyHash())));
 							toUpdateCount--;
 						} else if (attr.getName().getLocalPart().equals(TYPE)) {
-							writer.add(eventFactory.createAttribute(TYPE,
-									resourceIterator.next().getMime()));
+							writer.add(eventFactory.createAttribute(TYPE, resourceIterator.next().getMime()));
 						} else {
 							writer.add(attr);
 						}
@@ -649,9 +761,8 @@ public class ENMLProcessor {
 		while (reader.hasNext()) {
 			XMLEvent event = (XMLEvent) reader.next();
 			if (event.getEventType() == XMLEvent.DTD) {
-				writer.add(eventFactory
-						.createDTD("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"));
-				StartElement newElement = eventFactory.createStartElement("", "http://www.w3.org/1999/xhtml", "html");
+				writer.add(eventFactory.createDTD(XHTML_DOCTYPE));
+				StartElement newElement = eventFactory.createStartElement("", XHTML_NAMESPACE, "html");
 				writer.add(newElement);
 			} else if (event.getEventType() == XMLEvent.START_ELEMENT) {
 
@@ -723,7 +834,6 @@ public class ENMLProcessor {
 			lastEvent = event;
 		}
 		writer.flush();
-
 		log.fine("Note " + note.getGuid() + " has been converted in "
 				+ Utils.getDurationBreakdown(System.currentTimeMillis() - start));
 		return out;
@@ -772,71 +882,6 @@ public class ENMLProcessor {
 				if (hashToDelete.contains(Utils.bytesToHex(resource.getData().getBodyHash()))) {
 					note.getResources().remove(resource);
 				}
-			}
-		}
-		note.setContent(new String(baos.toByteArray(), Charset.forName(CHARSET)));
-		log.fine("Note ENML content of " + note.getGuid() + " has been updated with resource mapping in "
-				+ Utils.getDurationBreakdown(System.currentTimeMillis() - start));
-		return note;
-	}
-
-	private Note updateNoteResourcesByHash(final Note note, final Map<String, Resource> oldNewResourcesMap,
-			boolean deleteMissing) throws XMLStreamException {
-
-		long start = System.currentTimeMillis();
-		log.finer("Update ENML content with Resource mapping of Note " + note.getGuid());
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		XMLEventReader reader = inputFactory.createXMLEventReader(new ByteArrayInputStream(note.getContent().getBytes(
-				Charset.forName(CHARSET))));
-
-		XMLEventWriter writer = outputFactory.createXMLEventWriter(baos);
-
-		List<String> hashToDelete = new ArrayList<String>();
-
-		while (reader.hasNext()) {
-			XMLEvent event = (XMLEvent) reader.next();
-			if (event.getEventType() == XMLEvent.START_DOCUMENT) {
-				StartElement startElement = event.asStartElement();
-				if (startElement.getName().getLocalPart().equals(MEDIA)) {
-					for (@SuppressWarnings("unchecked")
-					Iterator<Attribute> iterator = startElement.getAttributes(); iterator.hasNext();) {
-						Attribute attr = (Attribute) iterator.next();
-						if (attr.getName().getLocalPart().equals(HASH)) {
-							// If the resource has to be updated (is in the map)
-							if (oldNewResourcesMap.containsKey(attr.getValue())) {
-								Resource toUpdate = oldNewResourcesMap.get(attr.getValue());
-								writer.add(eventFactory.createAttribute(HASH,
-										Utils.bytesToHex(toUpdate.getData().getBodyHash())));
-								// if the ressource to update is not in the Note, add it
-								// This way the result Note will be consistent no matter if the Resource to update has
-								// already been added to the Note
-								if (!note.getResources().contains(toUpdate)) {
-									hashToDelete.add(attr.getValue());
-									note.addToResources(toUpdate);
-								}
-							} else {
-								if (deleteMissing) {
-									hashToDelete.add(attr.getValue());
-								} else {
-									writer.add(attr);
-								}
-							}
-						} else {
-							writer.add(attr);
-						}
-					}
-				} else {
-					writer.add(event);
-				}
-			} else {
-				writer.add(event);
-			}
-		}
-		// Remove the original resources after they have been updated
-		for (Resource resource : note.getResources()) {
-			if (hashToDelete.contains(Utils.bytesToHex(resource.getData().getBodyHash()))) {
-				note.getResources().remove(resource);
 			}
 		}
 		note.setContent(new String(baos.toByteArray(), Charset.forName(CHARSET)));

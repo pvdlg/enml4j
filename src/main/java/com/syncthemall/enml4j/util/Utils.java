@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.syncthemall.enml4j.ENMLProcessor;
+
 /**
  * An utility class to encode/decode file in base64.
  */
@@ -62,7 +64,7 @@ public final class Utils {
 	public static String encodeToBase64Binary(final InputStream is) throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		int nRead;
-		byte[] data = new byte[16384]; // 16K
+		byte[] data = new byte[ENMLProcessor.BUFFER_SIZE];
 
 		while ((nRead = is.read(data, 0, data.length)) != -1) {
 			buffer.write(data, 0, nRead);
