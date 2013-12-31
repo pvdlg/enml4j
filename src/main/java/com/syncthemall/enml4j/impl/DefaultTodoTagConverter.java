@@ -61,7 +61,8 @@ public class DefaultTodoTagConverter extends BaseConverter {
 
 		List<Attribute> attrs = new ArrayList<Attribute>();
 		attrs.add(getEventFactory().createAttribute("type", "checkbox"));
-		if (start.getAttributeByName(new QName("checked")).getValue().equalsIgnoreCase("true")) {
+        Attribute checkedAttr = start.getAttributeByName(new QName("checked"));
+        if (checkedAttr != null && Boolean.parseBoolean(checkedAttr.getValue())) {
 			attrs.add(getEventFactory().createAttribute("checked", ""));
 		}
 
