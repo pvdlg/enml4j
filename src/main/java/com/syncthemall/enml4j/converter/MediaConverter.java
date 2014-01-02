@@ -1,6 +1,5 @@
 /**
  * The MIT License
- *
  * Copyright (c) 2013 Pierre-Denis Vanduynslager
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,26 +35,35 @@ import com.syncthemall.enml4j.util.Elements;
 
 /**
  * Base class to extends to creates custom converters for {@code <en-media>} ENML tags.
+ * 
+ * @author Pierre-Denis Vanduynslager <pierre.denis.vanduynslager@gmail.com>
  */
 public abstract class MediaConverter implements Converter {
 
 	private XMLEventFactory eventFactory;
 
+	@Override
 	public abstract Elements convertElement(StartElement start, Note note, Map<String, String> mapHashURL);
 
+	@Override
 	public abstract List<XMLEvent> insertBefore(StartElement start, Note note, Map<String, String> mapHashURL);
 
+	@Override
 	public abstract List<XMLEvent> insertAfter(StartElement start, Note note, Map<String, String> mapHashURL);
 
+	@Override
 	public abstract List<XMLEvent> insertIn(StartElement start, Note note, Map<String, String> mapHashURL);
 
+	@Override
 	public abstract Characters convertCharacter(Characters characters, StartElement start, Note note,
 			Map<String, String> mapHashURL);
 
+	@Override
 	public final XMLEventFactory getEventFactory() {
 		return eventFactory;
 	}
 
+	@Override
 	public final MediaConverter setEventFactory(final XMLEventFactory eventFactory) {
 		this.eventFactory = eventFactory;
 		return this;

@@ -20,63 +20,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.syncthemall.enml4j.util;
+package com.syncthemall.enml4j.exception;
 
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
+import java.text.MessageFormat;
+
+import com.evernote.edam.type.Note;
+import com.evernote.edam.type.Resource;
 
 /**
- * A simple class to contain a {@code StartElement} and the corresponding {@code EndElement}.
+ * <em>Unchecked exceptions</em> Exception indicating an inconsistency between a resource referenced in the note content
+ * and the {@link Resource} object list associated with the {@link Note}
  * 
  * @author Pierre-Denis Vanduynslager <pierre.denis.vanduynslager@gmail.com>
  */
-public class Elements {
+public final class MissingResourceException extends RuntimeException {
 
-	private final StartElement start;
-	private final EndElement end;
+	private static final long serialVersionUID = -745314206940896696L;
+	private static final String MESSAGE = "The note {0} has a resource referenced in the note content but inexistant as a Resource object";
 
 	/**
-	 * @param start the {@code StartElement}
-	 * @param end the corresponding {@code EndElement}
+	 * Constructs a new {@code MissingResourceException} with a default detail message.
 	 */
-	public Elements(final StartElement start, final EndElement end) {
-		this.start = start;
-		this.end = end;
+	public MissingResourceException() {
+		super(MessageFormat.format(MESSAGE, "[unknown]"));
 	}
 
 	/**
-	 * @return the {@code StartElement}
+	 * Constructs a new {@code MissingResourceException} with a detail message containing a {@code Note} title.
+	 * 
+	 * @param noteTitle the {@code Note} title.
 	 */
-	public final StartElement getStartElement() {
-		return start;
-	}
-
-	/**
-	 * @return the corresponding {@code EndElement}
-	 */
-	public final EndElement getEndElement() {
-		return end;
-	}
-
-	@Override
-	public final int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((start == null) ? 0 : start.hashCode());
-		result = prime * result + ((end == null) ? 0 : end.hashCode());
-		return result;
-	}
-
-	@Override
-	public final boolean equals(final Object o) {
-		if (o == null) {
-			return false;
-		}
-		if (!(o instanceof Elements)) {
-			return false;
-		}
-		Elements pairo = (Elements) o;
-		return this.start.equals(pairo.getStartElement()) && this.end.equals(pairo.getEndElement());
+	public MissingResourceException(final String noteTitle) {
+		super(MessageFormat.format(MESSAGE, noteTitle));
 	}
 
 }

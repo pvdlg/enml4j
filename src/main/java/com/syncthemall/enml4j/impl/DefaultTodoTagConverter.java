@@ -1,6 +1,5 @@
 /**
  * The MIT License
- *
  * Copyright (c) 2013 Pierre-Denis Vanduynslager
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +22,10 @@
  */
 package com.syncthemall.enml4j.impl;
 
+import static com.syncthemall.enml4j.util.Constants.CHECKED;
+import static com.syncthemall.enml4j.util.Constants.INPUT;
+import static com.syncthemall.enml4j.util.Constants.TYPE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +43,8 @@ import com.syncthemall.enml4j.util.Elements;
 /**
  * Default {@code Converter} implementation to convert {@code <en-todo>} ENML tags.
  * <p>
- * This {@link Converter} will replace an {@code <en-todo>} tag with an {@code <input type="checkbox"></input>} HTML tag. <br>
+ * This {@link Converter} will replace an {@code <en-todo>} tag with an {@code <input type="checkbox"></input>} HTML
+ * tag. <br>
  * The {@code <input type="checkbox">} will be checked if the {@code <en-todo>} tag is.
  * <p>
  * 
@@ -51,6 +55,8 @@ import com.syncthemall.enml4j.util.Elements;
  * @see <a href="http://en.wikipedia.org/wiki/Data_URI_scheme">Data_URI_scheme</a>
  * @see <a href="http://dev.evernote.com/start/core/enml.php">Understanding the Evernote Markup Language</a>
  * @see <a href="http://docs.oracle.com/javaee/5/tutorial/doc/bnbdv.html">Streaming API for XML</a>
+ * 
+ * @author Pierre-Denis Vanduynslager <pierre.denis.vanduynslager@gmail.com>
  */
 public class DefaultTodoTagConverter extends BaseConverter {
 
@@ -60,14 +66,15 @@ public class DefaultTodoTagConverter extends BaseConverter {
 	public final Elements convertElement(final StartElement start, final Note note) {
 
 		List<Attribute> attrs = new ArrayList<Attribute>();
-		attrs.add(getEventFactory().createAttribute("type", "checkbox"));
-		if (start.getAttributeByName(new QName("checked")).getValue().equalsIgnoreCase("true")) {
-			attrs.add(getEventFactory().createAttribute("checked", ""));
+		attrs.add(getEventFactory().createAttribute(TYPE, "checkbox"));
+		Attribute checkedAttr = start.getAttributeByName(new QName(CHECKED));
+		if (checkedAttr != null && Boolean.parseBoolean(checkedAttr.getValue())) {
+			attrs.add(getEventFactory().createAttribute(CHECKED, ""));
 		}
 
 		return new Elements(getEventFactory().createStartElement(start.getName().getPrefix(),
-				start.getName().getNamespaceURI(), "input", attrs.iterator(), start.getNamespaces()), getEventFactory()
-				.createEndElement("", "", "type"));
+				start.getName().getNamespaceURI(), INPUT, attrs.iterator(), start.getNamespaces()), getEventFactory()
+				.createEndElement("", "", TYPE));
 	}
 
 	/**

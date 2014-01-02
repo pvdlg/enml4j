@@ -1,6 +1,5 @@
 /**
  * The MIT License
- *
  * Copyright (c) 2013 Pierre-Denis Vanduynslager
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +22,15 @@
  */
 package com.syncthemall.enml4j.impl;
 
+import static com.syncthemall.enml4j.util.Constants.CHARSET;
+import static com.syncthemall.enml4j.util.Constants.CONTENT;
+import static com.syncthemall.enml4j.util.Constants.HEAD;
+import static com.syncthemall.enml4j.util.Constants.META;
+import static com.syncthemall.enml4j.util.Constants.NAME;
+import static com.syncthemall.enml4j.util.Constants.POSITION_ZERO;
+import static com.syncthemall.enml4j.util.Constants.TITLE;
+import static com.syncthemall.enml4j.util.Constants.VERSION;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +42,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import com.evernote.edam.type.Note;
-import com.syncthemall.enml4j.ENMLProcessor;
 import com.syncthemall.enml4j.converter.BaseConverter;
 import com.syncthemall.enml4j.converter.Converter;
 import com.syncthemall.enml4j.util.Elements;
@@ -42,9 +49,9 @@ import com.syncthemall.enml4j.util.Elements;
 /**
  * Default {@code Converter} implementation to convert {@code <en-note>} ENML tags.
  * <p>
- * This {@link Converter} will replace an {@code <en-note>} tag with an {@code <body></body>} HTML tag preceded by a full HTML
- * header. The header will contain {@code <meta>} and {@code <title>} tags filled with the {@code Note} attributes. The
- * valid HTML attributes of the {@code <en-note>} tag will be preserved in the {@code <body>} tag.
+ * This {@link Converter} will replace an {@code <en-note>} tag with an {@code <body></body>} HTML tag preceded by a
+ * full HTML header. The header will contain {@code <meta>} and {@code <title>} tags filled with the {@code Note}
+ * attributes. The valid HTML attributes of the {@code <en-note>} tag will be preserved in the {@code <body>} tag.
  * <p>
  * For example :
  * {@code <en-note xmlns="http://xml.evernote.com/pub/enml2.dtd" style="background: #e6e6e6;font-size: 14px;">} will be
@@ -65,6 +72,8 @@ import com.syncthemall.enml4j.util.Elements;
  * @see <a href="http://en.wikipedia.org/wiki/Data_URI_scheme">Data_URI_scheme</a>
  * @see <a href="http://dev.evernote.com/start/core/enml.php">Understanding the Evernote Markup Language</a>
  * @see <a href="http://docs.oracle.com/javaee/5/tutorial/doc/bnbdv.html">Streaming API for XML</a>
+ * 
+ * @author Pierre-Denis Vanduynslager <pierre.denis.vanduynslager@gmail.com>
  */
 public class DefaultNoteTagConverter extends BaseConverter {
 
@@ -85,90 +94,90 @@ public class DefaultNoteTagConverter extends BaseConverter {
 
 		List<XMLEvent> result = new ArrayList<XMLEvent>();
 
-		result.add(getEventFactory().createStartElement("", "", "head", null, null));
+		result.add(getEventFactory().createStartElement("", "", HEAD, null, null));
 		result.add(getEventFactory().createStartElement(
 				"",
 				"",
-				"meta",
+				META,
 				Arrays.asList(getEventFactory().createAttribute("http-equiv", "Content-Type"),
-						getEventFactory().createAttribute("content", "text/html; charset=UTF-8")).iterator(), null));
-		result.add(getEventFactory().createEndElement("", "", "meta"));
+						getEventFactory().createAttribute(CONTENT, "text/html; charset=" + CHARSET)).iterator(), null));
+		result.add(getEventFactory().createEndElement("", "", META));
 
 		result.add(getEventFactory().createStartElement(
 				"",
 				"",
-				"meta",
-				Arrays.asList(getEventFactory().createAttribute("name", "exporter-version"),
-						getEventFactory().createAttribute("content", ENMLProcessor.VERSION)).iterator(), null));
-		result.add(getEventFactory().createEndElement("", "", "meta"));
+				META,
+				Arrays.asList(getEventFactory().createAttribute(NAME, "exporter-version"),
+						getEventFactory().createAttribute(CONTENT, VERSION)).iterator(), null));
+		result.add(getEventFactory().createEndElement("", "", META));
 
 		result.add(getEventFactory().createStartElement(
 				"",
 				"",
-				"meta",
+				META,
 				Arrays.asList(
-						getEventFactory().createAttribute("name", "altitude"),
-						getEventFactory().createAttribute("content",
+						getEventFactory().createAttribute(NAME, "altitude"),
+						getEventFactory().createAttribute(CONTENT,
 								new DecimalFormat("0.000000").format(note.getAttributes().getAltitude()))).iterator(),
 				null));
-		result.add(getEventFactory().createEndElement("", "", "meta"));
+		result.add(getEventFactory().createEndElement("", "", META));
 
 		result.add(getEventFactory().createStartElement(
 				"",
 				"",
-				"meta",
+				META,
 				Arrays.asList(
-						getEventFactory().createAttribute("name", "author"),
-						getEventFactory().createAttribute("content",
+						getEventFactory().createAttribute(NAME, "author"),
+						getEventFactory().createAttribute(CONTENT,
 								note.getAttributes().getAuthor() != null ? note.getAttributes().getAuthor() : ""))
 						.iterator(), null));
-		result.add(getEventFactory().createEndElement("", "", "meta"));
+		result.add(getEventFactory().createEndElement("", "", META));
 
 		result.add(getEventFactory().createStartElement(
 				"",
 				"",
-				"meta",
-				Arrays.asList(getEventFactory().createAttribute("name", "created"),
-						getEventFactory().createAttribute("content", new Date(note.getCreated()).toString()))
+				META,
+				Arrays.asList(getEventFactory().createAttribute(NAME, "created"),
+						getEventFactory().createAttribute(CONTENT, new Date(note.getCreated()).toString()))
 						.iterator(), null));
-		result.add(getEventFactory().createEndElement("", "", "meta"));
+		result.add(getEventFactory().createEndElement("", "", META));
 
 		result.add(getEventFactory().createStartElement(
 				"",
 				"",
-				"meta",
+				META,
 				Arrays.asList(
-						getEventFactory().createAttribute("name", "latitude"),
-						getEventFactory().createAttribute("content",
-								new DecimalFormat("0.000000").format(note.getAttributes().getLatitude()))).iterator(),
+						getEventFactory().createAttribute(NAME, "latitude"),
+						getEventFactory().createAttribute(CONTENT,
+								new DecimalFormat(POSITION_ZERO).format(note.getAttributes().getLatitude()))).iterator(),
 				null));
-		result.add(getEventFactory().createEndElement("", "", "meta"));
+		result.add(getEventFactory().createEndElement("", "", META));
 
 		result.add(getEventFactory().createStartElement(
 				"",
 				"",
-				"meta",
+				META,
 				Arrays.asList(
-						getEventFactory().createAttribute("name", "longitude"),
-						getEventFactory().createAttribute("content",
-								new DecimalFormat("0.000000").format(note.getAttributes().getLongitude()))).iterator(),
+						getEventFactory().createAttribute(NAME, "longitude"),
+						getEventFactory().createAttribute(CONTENT,
+								new DecimalFormat(POSITION_ZERO).format(note.getAttributes().getLongitude()))).iterator(),
 				null));
-		result.add(getEventFactory().createEndElement("", "", "meta"));
+		result.add(getEventFactory().createEndElement("", "", META));
 
 		result.add(getEventFactory().createStartElement(
 				"",
 				"",
-				"meta",
-				Arrays.asList(getEventFactory().createAttribute("name", "updated"),
-						getEventFactory().createAttribute("content", new Date(note.getUpdated()).toString()))
+				META,
+				Arrays.asList(getEventFactory().createAttribute(NAME, "updated"),
+						getEventFactory().createAttribute(CONTENT, new Date(note.getUpdated()).toString()))
 						.iterator(), null));
-		result.add(getEventFactory().createEndElement("", "", "meta"));
+		result.add(getEventFactory().createEndElement("", "", META));
 
-		result.add(getEventFactory().createStartElement("", "", "title"));
+		result.add(getEventFactory().createStartElement("", "", TITLE));
 		result.add(getEventFactory().createCharacters(note.getTitle() != null ? note.getTitle() : ""));
-		result.add(getEventFactory().createEndElement("", "", "title"));
+		result.add(getEventFactory().createEndElement("", "", TITLE));
 
-		result.add(getEventFactory().createEndElement("", "", "head"));
+		result.add(getEventFactory().createEndElement("", "", HEAD));
 
 		return result;
 	}

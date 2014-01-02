@@ -1,6 +1,5 @@
 /**
  * The MIT License
- *
  * Copyright (c) 2013 Pierre-Denis Vanduynslager
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,6 +21,14 @@
  * THE SOFTWARE.
  */
 package com.syncthemall.enml4j;
+
+import static com.syncthemall.enml4j.util.Constants.CHARSET;
+import static com.syncthemall.enml4j.util.Constants.CRYPT;
+import static com.syncthemall.enml4j.util.Constants.HASH;
+import static com.syncthemall.enml4j.util.Constants.MEDIA;
+import static com.syncthemall.enml4j.util.Constants.NOTE;
+import static com.syncthemall.enml4j.util.Constants.TODO;
+import static com.syncthemall.enml4j.util.Constants.TYPE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -91,52 +98,12 @@ import com.syncthemall.enml4j.util.Utils;
  * 
  * @see <a href="http://dev.evernote.com/start/core/enml.php">Understanding the Evernote Markup Language</a>
  * @see <a href="http://docs.oracle.com/javaee/5/tutorial/doc/bnbdv.html">Streaming API for XML</a>
+ * 
+ * @author Pierre-Denis Vanduynslager <pierre.denis.vanduynslager@gmail.com>
  */
 public class ENMLProcessor {
 
 	private static Logger log = Logger.getLogger(ENMLProcessor.class.getName());
-
-	/**
-	 * The tag {@code <en-note>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
-	 * Evernote Markup Language</a>
-	 */
-	public static final String NOTE = "en-note";
-
-	/**
-	 * The tag {@code <en-media>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
-	 * Evernote Markup Language</a>
-	 */
-	public static final String MEDIA = "en-media";
-
-	/**
-	 * The tag {@code <en-todo>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
-	 * Evernote Markup Language</a>
-	 */
-	public static final String TODO = "en-todo";
-
-	/**
-	 * The tag {@code <en-crypt>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
-	 * Evernote Markup Language</a>
-	 */
-	public static final String CRYPT = "en-crypt";
-
-	/**
-	 * The Attribute {@code hash}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
-	 * Evernote Markup Language</a>
-	 */
-	public static final String HASH = "hash";
-
-	/** The Attribute {@code type}. */
-	public static final String TYPE = "type";
-
-	/** Default charset : UTF-8. */
-	public static final String CHARSET = "UTF-8";
-
-	/** Version of ENML4j. Written in the header of the generated HTML. */
-	public static final String VERSION = "ENML4J 0.2.1";
-
-	/** Buffer size to convert image stream in base64. Defined to 16 KB. */
-	public static final int BUFFER_SIZE = 16384;
 
 	/** XHTML Transitional doctype. */
 	private static final String XHTML_DOCTYPE = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
@@ -360,10 +327,10 @@ public class ENMLProcessor {
 
 		Map<String, String> hashURLMap = new HashMap<String, String>();
 		if (mapGUIDURL != null) {
-			for (String guid : mapGUIDURL.keySet()) {
+			for (Map.Entry<String, String> mapGUIDURLEntry : mapGUIDURL.entrySet()) {
 				for (Resource resource : note.getResources()) {
-					if (resource.getGuid().equals(guid)) {
-						hashURLMap.put(Utils.bytesToHex(resource.getData().getBodyHash()), mapGUIDURL.get(guid));
+					if (resource.getGuid().equals(mapGUIDURLEntry.getKey())) {
+						hashURLMap.put(Utils.bytesToHex(resource.getData().getBodyHash()), mapGUIDURLEntry.getValue());
 					}
 				}
 			}
@@ -404,10 +371,10 @@ public class ENMLProcessor {
 		Map<String, String> hashURLMap = new HashMap<String, String>();
 
 		if (mapGUIDURL != null) {
-			for (String guid : mapGUIDURL.keySet()) {
+			for (Map.Entry<String, String> mapGUIDURLEntry : mapGUIDURL.entrySet()) {
 				for (Resource resource : note.getResources()) {
-					if (resource.getGuid().equals(guid)) {
-						hashURLMap.put(Utils.bytesToHex(resource.getData().getBodyHash()), mapGUIDURL.get(guid));
+					if (resource.getGuid().equals(mapGUIDURLEntry.getKey())) {
+						hashURLMap.put(Utils.bytesToHex(resource.getData().getBodyHash()), mapGUIDURLEntry.getValue());
 					}
 				}
 			}
@@ -455,9 +422,9 @@ public class ENMLProcessor {
 
 		Map<String, Resource> hashResourceMap = new HashMap<String, Resource>();
 
-		for (Resource oldResource : oldNewResourcesMap.keySet()) {
-			hashResourceMap.put(Utils.bytesToHex(oldResource.getData().getBodyHash()),
-					oldNewResourcesMap.get(oldResource));
+		for (Map.Entry<Resource, Resource> oldNewResourcesMapEntry : oldNewResourcesMap.entrySet()) {
+			hashResourceMap.put(Utils.bytesToHex(oldNewResourcesMapEntry.getKey().getData().getBodyHash()),
+					oldNewResourcesMapEntry.getValue());
 		}
 		return updateNoteResourcesByHash(note, hashResourceMap, deleteMissing);
 	}
@@ -500,13 +467,13 @@ public class ENMLProcessor {
 
 		Map<String, Resource> hashResourceMap = new HashMap<String, Resource>();
 
-		for (String oldGuid : oldNewResourcesMap.keySet()) {
+		for (Map.Entry<String, String> oldNewResourcesMapEntry : oldNewResourcesMap.entrySet()) {
 			Resource oldResource = null;
 			Resource newResource = null;
 			for (Resource resource : note.getResources()) {
-				if (resource.getGuid().equals(oldGuid)) {
+				if (resource.getGuid().equals(oldNewResourcesMapEntry.getKey())) {
 					oldResource = resource;
-				} else if (resource.getGuid().equals(oldNewResourcesMap.get(oldGuid))) {
+				} else if (resource.getGuid().equals(oldNewResourcesMapEntry.getValue())) {
 					newResource = resource;
 				}
 			}
@@ -818,11 +785,9 @@ public class ENMLProcessor {
 					EndElement endElement = stack.pop();
 					writer.add(endElement);
 
-					if (toInsertAfter.containsKey(endElement)) {
-						if (toInsertAfter.get(endElement) != null) {
-							for (XMLEvent element : toInsertAfter.get(endElement)) {
-								writer.add(element);
-							}
+					if (toInsertAfter.containsKey(endElement) && toInsertAfter.get(endElement) != null) {
+						for (XMLEvent element : toInsertAfter.get(endElement)) {
+							writer.add(element);
 						}
 					}
 				} else {
@@ -847,10 +812,7 @@ public class ENMLProcessor {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		XMLEventReader reader = inputFactory.createXMLEventReader(new ByteArrayInputStream(note.getContent().getBytes(
 				Charset.forName(CHARSET))));
-
 		XMLEventWriter writer = outputFactory.createXMLEventWriter(baos);
-
-		// List<String> hashToDelete = new ArrayList<String>();
 
 		while (reader.hasNext()) {
 			XMLEvent event = (XMLEvent) reader.next();

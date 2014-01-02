@@ -1,6 +1,5 @@
 /**
  * The MIT License
- *
  * Copyright (c) 2013 Pierre-Denis Vanduynslager
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,29 +36,36 @@ import com.syncthemall.enml4j.util.Elements;
 /**
  * Base class to extends to creates custom converters for {@code <en-note>}, {@code <en-todo>} or {@code <en-crypt>}
  * ENML tags.
+ * 
+ * @author Pierre-Denis Vanduynslager <pierre.denis.vanduynslager@gmail.com>
  */
 public abstract class BaseConverter implements Converter {
 
 	private XMLEventFactory eventFactory;
 
+	@Override
 	public final Elements convertElement(final StartElement start, final Note note, final Map<String, String> mapHashURL) {
 		return convertElement(start, note);
 	}
 
+	@Override
 	public final List<XMLEvent> insertBefore(final StartElement start, final Note note,
 			final Map<String, String> mapHashURL) {
 		return insertBefore(start, note);
 	}
 
+	@Override
 	public final List<XMLEvent> insertAfter(final StartElement start, final Note note,
 			final Map<String, String> mapHashURL) {
 		return insertAfter(start, note);
 	}
 
+	@Override
 	public final List<XMLEvent> insertIn(final StartElement start, final Note note, final Map<String, String> mapHashURL) {
 		return insertIn(start, note);
 	}
 
+	@Override
 	public final Characters convertCharacter(final Characters characters, final StartElement start, final Note note,
 			final Map<String, String> mapHashURL) {
 		return convertCharacter(characters, start, note);
@@ -185,10 +191,12 @@ public abstract class BaseConverter implements Converter {
 	 */
 	public abstract Characters convertCharacter(Characters characters, StartElement start, Note note);
 
+	@Override
 	public final XMLEventFactory getEventFactory() {
 		return eventFactory;
 	}
 
+	@Override
 	public final BaseConverter setEventFactory(final XMLEventFactory eventFactory) {
 		this.eventFactory = eventFactory;
 		return this;

@@ -1,6 +1,5 @@
 /**
  * The MIT License
- *
  * Copyright (c) 2013 Pierre-Denis Vanduynslager
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,6 +21,19 @@
  * THE SOFTWARE.
  */
 package com.syncthemall.enml4j.impl;
+import static com.syncthemall.enml4j.util.Constants.A;
+import static com.syncthemall.enml4j.util.Constants.ALT;
+import static com.syncthemall.enml4j.util.Constants.BASE64;
+import static com.syncthemall.enml4j.util.Constants.DATA;
+import static com.syncthemall.enml4j.util.Constants.HASH;
+import static com.syncthemall.enml4j.util.Constants.HREF;
+import static com.syncthemall.enml4j.util.Constants.IMAGE;
+import static com.syncthemall.enml4j.util.Constants.IMG;
+import static com.syncthemall.enml4j.util.Constants.SPAN;
+import static com.syncthemall.enml4j.util.Constants.SRC;
+import static com.syncthemall.enml4j.util.Constants.STYLE;
+import static com.syncthemall.enml4j.util.Constants.TITLE;
+import static com.syncthemall.enml4j.util.Constants.TYPE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +50,7 @@ import com.evernote.edam.type.Note;
 import com.evernote.edam.type.Resource;
 import com.syncthemall.enml4j.converter.BaseConverter;
 import com.syncthemall.enml4j.converter.Converter;
+import com.syncthemall.enml4j.exception.MissingResourceException;
 import com.syncthemall.enml4j.util.Elements;
 import com.syncthemall.enml4j.util.Utils;
 
@@ -72,6 +85,8 @@ import com.syncthemall.enml4j.util.Utils;
  * @see <a href="http://en.wikipedia.org/wiki/Data_URI_scheme">Data_URI_scheme</a>
  * @see <a href="http://dev.evernote.com/start/core/enml.php">Understanding the Evernote Markup Language</a>
  * @see <a href="http://docs.oracle.com/javaee/5/tutorial/doc/bnbdv.html">Streaming API for XML</a>
+ * 
+ * @author Pierre-Denis Vanduynslager <pierre.denis.vanduynslager@gmail.com>
  */
 public class DefaultInlineMediaTagConverter extends BaseConverter {
 
@@ -80,8 +95,8 @@ public class DefaultInlineMediaTagConverter extends BaseConverter {
 	 */
 	public final Elements convertElement(final StartElement start, final Note note) {
 
-		Attribute type = start.getAttributeByName(new QName("type"));
-		Attribute hash = start.getAttributeByName(new QName("hash"));
+		Attribute type = start.getAttributeByName(new QName(TYPE));
+		Attribute hash = start.getAttributeByName(new QName(HASH));
 
 		Resource currentResource = null;
 		for (Resource resource : note.getResources()) {
@@ -91,51 +106,50 @@ public class DefaultInlineMediaTagConverter extends BaseConverter {
 		}
 
 		if (currentResource == null) {
-			throw new RuntimeException("Tne note " + note.getTitle()
-					+ " has a resource referenced in the note content but inexistant as a Resource object");
+			throw new MissingResourceException(note.getTitle());
 		}
 
-		if (type.getValue().contains("image")) {
+		if (type.getValue().contains(IMAGE)) {
 			List<Attribute> newAttrs = new ArrayList<Attribute>();
 			for (@SuppressWarnings("unchecked")
 			Iterator<Attribute> iterator = start.getAttributes(); iterator.hasNext();) {
 				Attribute attr = iterator.next();
-				if (attr.getName().getLocalPart().equals("hash")) {
+				if (HASH.equals(attr.getName().getLocalPart())) {
 					Attribute src = getEventFactory().createAttribute(
-							"src",
-							"data:" + type.getValue() + ";base64, "
+							SRC,
+							DATA + type.getValue() + BASE64
 									+ Utils.encodeFileToBase64Binary(currentResource.getData().getBody()));
 					newAttrs.add(src);
-				} else if (!attr.getName().getLocalPart().equals("type")) {
+				} else if (!TYPE.equals(attr.getName().getLocalPart())) {
 					// type is not a supported attribute for img tag.
 					newAttrs.add(attr);
 				}
 			}
 			newAttrs.add(getEventFactory().createAttribute(
-					"alt",
+					ALT,
 					currentResource.getAttributes().getFileName() != null ? currentResource.getAttributes()
 							.getFileName() : ""));
 
-			return new Elements(getEventFactory().createStartElement("", "", "img", newAttrs.iterator(),
-					start.getNamespaces()), getEventFactory().createEndElement("", "", "img"));
+			return new Elements(getEventFactory().createStartElement("", "", IMG, newAttrs.iterator(),
+					start.getNamespaces()), getEventFactory().createEndElement("", "", IMG));
 		} else {
 			return new Elements(getEventFactory().createStartElement(
 					"",
 					"",
-					"a",
+					A,
 					Arrays.asList(
 							getEventFactory().createAttribute(
 									"download",
 									currentResource.getAttributes().getFileName() != null ? currentResource
 											.getAttributes().getFileName() : currentResource.getGuid()),
 							getEventFactory().createAttribute(
-									"href",
-									"data:" + type.getValue() + ";base64, "
+									HREF,
+									DATA + type.getValue() + BASE64
 											+ Utils.encodeFileToBase64Binary(currentResource.getData().getBody())),
 							type,
-							getEventFactory().createAttribute("style",
+							getEventFactory().createAttribute(STYLE,
 									"text-decoration: none;color: #6f6f6f;position: relative; display: block;"))
-							.iterator(), start.getNamespaces()), getEventFactory().createEndElement("", "", "a"));
+							.iterator(), start.getNamespaces()), getEventFactory().createEndElement("", "", A));
 		}
 	}
 
@@ -148,10 +162,10 @@ public class DefaultInlineMediaTagConverter extends BaseConverter {
 
 		List<XMLEvent> result = new ArrayList<XMLEvent>();
 
-		Attribute type = start.getAttributeByName(new QName("type"));
-		Attribute hash = start.getAttributeByName(new QName("hash"));
+		Attribute type = start.getAttributeByName(new QName(TYPE));
+		Attribute hash = start.getAttributeByName(new QName(HASH));
 
-		if (!type.getValue().contains("image")) {
+		if (!type.getValue().contains(IMAGE)) {
 
 			Resource currentResource = null;
 			for (Resource resource : note.getResources()) {
@@ -161,35 +175,34 @@ public class DefaultInlineMediaTagConverter extends BaseConverter {
 			}
 
 			if (currentResource == null) {
-				throw new RuntimeException("Tne note " + note.getTitle()
-						+ " has a resource referenced in the note content but inexistant as a Resource object");
+				throw new MissingResourceException(note.getTitle());
 			}
 
 			result.add(getEventFactory().createStartElement(
 					"",
 					"",
-					"img",
+					IMG,
 					Arrays.asList(
-							getEventFactory().createAttribute("alt", ""),
-							getEventFactory().createAttribute("title", currentResource.getAttributes().getFileName()),
+							getEventFactory().createAttribute(ALT, ""),
+							getEventFactory().createAttribute(TITLE, currentResource.getAttributes().getFileName()),
 							type,
-							getEventFactory().createAttribute("style", "position:absolute;border-color:transparent;"),
-							getEventFactory().createAttribute("src",
-									"data:" + type.getValue() + ";base64, " + Utils.getEncodedIcon(type.getValue())))
+							getEventFactory().createAttribute(STYLE, "position:absolute;border-color:transparent;"),
+							getEventFactory().createAttribute(SRC,
+									DATA + type.getValue() + BASE64 + Utils.getEncodedIcon(type.getValue())))
 							.iterator(), null));
 			result.add(getEventFactory().createStartElement(
 					"",
 					"",
-					"span",
+					SPAN,
 					Arrays.asList(
-							getEventFactory().createAttribute("title", currentResource.getAttributes().getFileName()),
-							getEventFactory().createAttribute("style",
+							getEventFactory().createAttribute(TITLE, currentResource.getAttributes().getFileName()),
+							getEventFactory().createAttribute(STYLE,
 									"display: block;line-height: 48px;margin-left: 56px;")).iterator(), null));
 
 			result.add(getEventFactory().createCharacters(currentResource.getAttributes().getFileName()));
 
-			result.add(getEventFactory().createEndElement("", "", "span"));
-			result.add(getEventFactory().createEndElement("", "", "img"));
+			result.add(getEventFactory().createEndElement("", "", SPAN));
+			result.add(getEventFactory().createEndElement("", "", IMG));
 		}
 		return result;
 	}
