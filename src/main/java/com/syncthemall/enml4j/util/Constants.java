@@ -25,13 +25,15 @@
  */
 package com.syncthemall.enml4j.util;
 
-
 /**
- * 
+ * Constant class.
  * 
  * @author Pierre-Denis Vanduynslager <pierre.denis.vanduynslager@gmail.com>
  */
 public final class Constants {
+
+	/** Version of ENML4j. Written in the header of the generated HTML. */
+	public static final String VERSION = "ENML4J 1.0.0";
 
 	/**
 	 * The tag {@code <en-note>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
@@ -65,70 +67,67 @@ public final class Constants {
 
 	/** The attribute {@code type}. */
 	public static final String TYPE = "type";
-	
+
 	/** The attribute {@code name}. */
 	public static final String NAME = "name";
-	
+
 	/** The attribute {@code content}. */
 	public static final String CONTENT = "content";
-	
+
 	/** The attribute {@code meta}. */
 	public static final String META = "meta";
-	
+
 	/** The attribute {@code title}. */
 	public static final String TITLE = "title";
-	
+
 	/** The attribute {@code style}. */
 	public static final String STYLE = "style";
-	
+
 	/** The attribute {@code image}. */
 	public static final String IMAGE = "image";
-	
+
 	/** The attribute {@code img}. */
 	public static final String IMG = "img";
-	
+
 	/** The attribute {@code src}. */
 	public static final String SRC = "src";
-	
+
 	/** The attribute {@code span}. */
 	public static final String SPAN = "span";
-	
+
 	/** The attribute {@code head}. */
 	public static final String HEAD = "head";
-	
+
 	/** The attribute {@code a}. */
 	public static final String A = "a";
-	
+
 	/** The attribute {@code href}. */
 	public static final String HREF = "href";
-	
+
 	/** The attribute {@code alt}. */
 	public static final String ALT = "alt";
-	
+
 	/** The attribute {@code input}. */
 	public static final String INPUT = "input";
-	
+
 	/** The attribute {@code checked}. */
 	public static final String CHECKED = "checked";
-	
+
 	/** The attribute {@code data:}. */
 	public static final String DATA = "data:";
-	
+
 	/** The attribute {@code ;base64, }. */
 	public static final String BASE64 = ";base64, ";
-	
+
 	/** The attribute {@code 0.000000}. */
 	public static final String POSITION_ZERO = "0.000000";
-	
+
 	/** Default charset : UTF-8. */
 	public static final String CHARSET = "UTF-8";
-	
-	/** Version of ENML4j. Written in the header of the generated HTML. */
-	public static final String VERSION = "ENML4J 0.2.1";
 
 	/** Buffer size to convert image stream in base64. Defined to 16 KB. */
 	public static final int BUFFER_SIZE = 16384;
-	
+
 	private Constants() {
 		super();
 	}

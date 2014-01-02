@@ -34,7 +34,7 @@ The easiest way to incorporate the SDK into your Java project is to use Maven. I
 <dependency>
 	<groupId>com.syncthemall</groupId>
 	<artifactId>enml4j</artifactId>
-	<version>0.2.1</version>
+	<version>1.0.0</version>
 </dependency>
 ```
 
@@ -44,7 +44,7 @@ If you'd prefer to build the jar yourself, it's as simple as running
 $ mvn package
 ```
 
-You'll find `enml4j-0.1.0.jar` in the target directory after the build completes. This single JAR contains everything needed to use the API.
+You'll find `enml4j-1.0.0.jar` in the target directory after the build completes. This single JAR contains everything needed to use the API.
 
 ### Dependencies
 
@@ -91,6 +91,10 @@ Potential future features:
 
 Change log
 ----------
+### 1.0.0
+  * Bug fixes
+  * Updated to Evernote SDK to version 1.25.1
+
 ### 0.2.1
   * New methods to update `Resource`s in `Note` ENML content, based on their hash value
   * Minor code improvements

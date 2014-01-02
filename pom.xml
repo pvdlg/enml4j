@@ -4,7 +4,7 @@
 	<groupId>com.syncthemall</groupId>
 	<artifactId>enml4j</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2.1</version>
+	<version>1.0.0</version>
 	<name>enml4j</name>
 	<inceptionYear>2013</inceptionYear>
 	<description>Simple utility classes to handle ENML (Evernote Markup Language) in Java</description>
