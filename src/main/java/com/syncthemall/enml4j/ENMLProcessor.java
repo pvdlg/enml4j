@@ -25,10 +25,12 @@ package com.syncthemall.enml4j;
 import static com.syncthemall.enml4j.util.Constants.CHARSET;
 import static com.syncthemall.enml4j.util.Constants.CRYPT;
 import static com.syncthemall.enml4j.util.Constants.HASH;
+import static com.syncthemall.enml4j.util.Constants.HTML;
 import static com.syncthemall.enml4j.util.Constants.MEDIA;
 import static com.syncthemall.enml4j.util.Constants.NOTE;
 import static com.syncthemall.enml4j.util.Constants.TODO;
 import static com.syncthemall.enml4j.util.Constants.TYPE;
+import static com.syncthemall.enml4j.util.Constants.XMLNS;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,6 +38,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -106,7 +109,7 @@ public class ENMLProcessor {
 	private static Logger log = Logger.getLogger(ENMLProcessor.class.getName());
 
 	/** XHTML Transitional doctype. */
-	private static final String XHTML_DOCTYPE = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+	private static final String XHTML_DOCTYPE = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">";
 
 	/** XHTML namespace. */
 	private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
@@ -729,7 +732,10 @@ public class ENMLProcessor {
 			XMLEvent event = (XMLEvent) reader.next();
 			if (event.getEventType() == XMLEvent.DTD) {
 				writer.add(eventFactory.createDTD(XHTML_DOCTYPE));
-				StartElement newElement = eventFactory.createStartElement("", XHTML_NAMESPACE, "html");
+				StartElement newElement = eventFactory
+						.createStartElement("", "", HTML,
+								Arrays.asList(eventFactory.createAttribute(XMLNS, XHTML_NAMESPACE))
+										.iterator(), null);
 				writer.add(newElement);
 			} else if (event.getEventType() == XMLEvent.START_ELEMENT) {
 

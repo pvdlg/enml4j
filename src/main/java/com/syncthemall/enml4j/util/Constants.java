@@ -109,6 +109,12 @@ public final class Constants {
 
 	/** The attribute {@code input}. */
 	public static final String INPUT = "input";
+	
+	/** The attribute {@code html}. */
+	public static final String HTML = "html";
+	
+	/** The attribute {@code xmlns}. */
+	public static final String XMLNS = "xmlns";
 
 	/** The attribute {@code checked}. */
 	public static final String CHECKED = "checked";
