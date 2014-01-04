@@ -113,3 +113,6 @@ License
 MIT
 
 *Free Software, Fuck Yeah!*   
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/vanduynslagerp/enml4j/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
