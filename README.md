@@ -20,7 +20,7 @@ Converting a Notes ENML content to XHTML is as simple as:
 
 ```java
     ENMLProcessor = new ENMLProcessor();
-    FileOutputStream fos = new FileOutputStream(/path/to/file.html");
+    FileOutputStream fos = new FileOutputStream("/path/to/file.html");
     ENMLProcessor.noteToInlineHTML(note, fos);
 ```
 
