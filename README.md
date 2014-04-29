@@ -7,9 +7,11 @@ Overview
 --------
 ENML4j provide a convenient way to:
 
-  * Convert an Evernote `Note` ENML content to an HTML file referencing `Resource`s as configurable URL
-  * Convert an Evernote `Note` ENML content to an HTML file with inline `Resource`s as Data URI
-  * Update an Evernote `Note` ENML content after updating it's `Resource`s 
+  * Convert a `Note` ENML content to an HTML file referencing `Resource`s as configurable URL
+  * Convert a `Note` ENML content to an HTML file with inline `Resource`s as Data URI
+  * Replace `Resource` references in `Note` ENML content with new `Resources`
+  * Delete `Resource` references in `Note` ENML content
+  * Add `Resource` references in `Note` ENML content
 
 ENML4j is design to be simple, customizable and to produce valid XHTML.
 ENML4j uses stAX to parse ENML and write XHTML.
@@ -34,7 +36,7 @@ The easiest way to incorporate the SDK into your Java project is to use Maven. I
 <dependency>
 	<groupId>com.syncthemall</groupId>
 	<artifactId>enml4j</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 </dependency>
 ```
 
@@ -44,7 +46,7 @@ If you'd prefer to build the jar yourself, it's as simple as running
 $ mvn package
 ```
 
-You'll find `enml4j-1.0.0.jar` in the target directory after the build completes. This single JAR contains everything needed to use the API.
+You'll find `enml4j-1.1.0.jar` in the target directory after the build completes. This single JAR contains everything needed to use the API.
 
 ### Dependencies
 
@@ -56,7 +58,6 @@ User Guide
 
 This is the entry point of ENML4j. This class should be instantiated and kept in reference (as a static for example) for better performances. When
 converting a `Note` to HTML the Evernote DTD has to be parsed the first time, then stays in memory. Parsing the DTD the first time is time-consuming.
-
 
 This class rely on stAX to convert ENML to HTML. ENML4j will uses the default stAX implementation on the platform. Implementation can be easily chosen : [StAX Factory Classes]
 (http://docs.oracle.com/javaee/5/tutorial/doc/bnbem.html#bnbeo)
@@ -91,6 +92,11 @@ Potential future features:
 
 Change log
 ----------
+### 1.1.0
+  * Bug fixes
+  * added method addNoteResources
+  * Evernote DTD and it's dependencies are now embedded in the library
+
 ### 1.0.0
   * Bug fixes
   * Updated to Evernote SDK to version 1.25.1

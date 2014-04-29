@@ -33,7 +33,7 @@ package com.syncthemall.enml4j.util;
 public final class Constants {
 
 	/** Version of ENML4j. Written in the header of the generated HTML. */
-	public static final String VERSION = "ENML4J 1.0.0";
+	public static final String VERSION = "ENML4J 1.1.0";
 
 	/**
 	 * The tag {@code <en-note>}. See <a href="http://dev.evernote.com/start/core/enml.php#added">Understanding the
@@ -112,6 +112,12 @@ public final class Constants {
 	
 	/** The attribute {@code html}. */
 	public static final String HTML = "html";
+	
+	/** The attribute {@code width}. */
+	public static final String WIDTH = "width";
+	
+	/** The attribute {@code height}. */
+	public static final String HEIGHT = "height";
 	
 	/** The attribute {@code xmlns}. */
 	public static final String XMLNS = "xmlns";
